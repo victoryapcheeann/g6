@@ -7,6 +7,8 @@ import PageTwo from './pages/page2/page2';
 import PageThree from './pages/page3/page3';
 import PageFour from './pages/page4/page4';
 import PageFive from './pages/page5/page5';
+import PageSix from './pages/page6/page6';
+import PageSeven from './pages/page7/page7';
 
 function App() {
   function Layout() {
@@ -31,6 +33,12 @@ function App() {
               <div>
                 <Link to="/PageFive">Knowledge Tree Graph</Link>
               </div>
+              <div>
+                <Link to="/PageSix">Donut Transfer</Link>
+              </div>
+              <div>
+                <Link to="/PageSeven">Custom Category Graph</Link>
+              </div>
             </div>
           </nav>
   
@@ -54,6 +62,8 @@ function App() {
           <Route path="PageThree" element={<PageThree />} />
           <Route path="PageFour" element={<PageFour />} />
           <Route path="PageFive" element={<PageFive />} />
+          <Route path="PageSix" element={<PageSix />} />
+          <Route path="PageSeven" element={<PageSeven />} />
         </Route>
       </Routes>
     </div>
