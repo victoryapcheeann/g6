@@ -1,155 +1,219 @@
-import React, { useEffect, useState } from 'react';
-import { data } from './data';
-import G6 from '@antv/g6';
-import { NodeTooltips, EdgeToolTips, NodeContextMenu } from './component'
-import './registerShape';
+import React, { useEffect, useState } from "react";
+import G6 from "@antv/g6";
+import fiData from "./data/financial";
+import inData from "./data/increment";
+
+import { colorSets } from "./colors";
+import getLegend from "./legend";
+import { registerReactNode } from "./react-node";
+import { appenAutoShapeListener } from "@antv/g6-react-node";
+
+registerReactNode(G6);
+
+const financialData = { ...fiData };
+const incrementData = { ...inData };
+const iconsMap = {
+  account:
+    "https://gw.alipayobjects.com/mdn/rms_f8c6a0/afts/img/A*r4gpR5PMzesAAAAAAAAAAAAAARQnAQ",
+  bank:
+    "https://gw.alipayobjects.com/mdn/rms_f8c6a0/afts/img/A*k7OXRZz2C0EAAAAAAAAAAAAAARQnAQ",
+  shop:
+    "https://gw.alipayobjects.com/mdn/rms_f8c6a0/afts/img/A*12R4SIxt4cYAAAAAAAAAAAAAARQnAQ"
+};
+// const icons = fonts.glyphs.map((icon) => ({
+//   name: icon.font_class,
+//   unicode: String.fromCodePoint(icon.unicode_decimal) // `\\u${icon.unicode}`,
+// }));
+// const getIcon = (text) => {
+//   let iconName = text;
+//   const matchIcon = icons.find((icon) => icon.name === iconName) || {
+//     unicode: "",
+//     name: "default"
+//   };
+
+//   return matchIcon.unicode;
+// };
+
+/**
+ * by Shiwu
+ */
+
+const colorSetMap = {
+  family: colorSets[1],
+  financial: colorSets[0],
+  "social-network": colorSets[2],
+  club: colorSets[3],
+  club0: colorSets[3],
+  club1: colorSets[3],
+  recommend: colorSets[4],
+  main: colorSets[5],
+
+  undefined: colorSets[0],
+  account: colorSets[1],
+  shop: colorSets[2],
+  bank: colorSets[3]
+};
+
+const formatData = (dataType, data, idx) => {
+  const newData = {
+    nodes: [],
+    edges: []
+  };
+  const nodeMap = {};
+  data.nodes.forEach((node) => {
+    node.labelCfg = {
+      position: "bottom"
+    };
+    node.dataType = "account";
+    nodeMap[node.id] = node;
+    const amount =
+      node.donutAttrs.income +
+      node.donutAttrs.outcome +
+      node.donutAttrs.unknown;
+    // const size = 180 + amount / 10;
+    // node.size = 50
+    if (!node.tags) node.tags = [];
+    node.tags.push(node.tag);
+    if (!node.style) {
+      node.style = {};
+    }
+    console.log("node.nodeType", node.nodeType);
+    node.style.fill = colorSetMap[node.nodeType].mainFill;
+    node.style.stroke = colorSetMap[node.nodeType].mainStroke;
+    node.icon = {
+      show: true,
+      // fontFamily: "iconfont",
+      // text: "\ue81f"
+      img: iconsMap[node.nodeType]
+      // width: size / 3,
+      // height: size / 3
+    };
+    newData.nodes.push({ ...node });
+  });
+  data.edges.forEach((edge) => {
+    edge.size = Math.max(edge.amount / 1.5, 1);
+    edge.label = `¥${edge.amount * 1000}`;
+    edge.dataType = "transfer";
+    let d = 45; // nodeMap[edge.target] ? nodeMap[edge.target].size / 1.5 : 10;
+    if (edge.target === "shop4" || edge.target === "bank2") d = 100;
+    if (
+      (edge.target === "self" && edge.source === "son") ||
+      edge.target === "shop3"
+    )
+      d = 80;
+    if (edge.target === "club1-person1") d = 80;
+    if (edge.source === "club1-person1" && edge.target === "club1-person6")
+      d = 80;
+    if (edge.source === "self" && edge.target === "nf1") d = 80;
+    if (edge.source === "nf1" && edge.target === "club1-person6") d = 80;
+    edge.style = {
+      endArrow: {
+        path: G6.Arrow.triangle(5, 5, d),
+        d,
+        fill: colorSetMap["financial"].mainStroke
+      },
+      stroke: colorSetMap["financial"].mainStroke
+    };
+    newData.edges.push({ ...edge });
+  });
+  return newData;
+};
+
+// 格式化账户数据
+const formattedFinancialData = formatData("financial", financialData);
+
+const data = {
+  nodes: formattedFinancialData.nodes,
+  edges: formattedFinancialData.edges
+};
+G6.Util.processParallelEdges(data.edges, 15);
 
 export default function PageTwo() {
-  const ref = React.useRef(null)
-  let graph = null
-
-  // 边tooltip坐标
-  const [showEdgeTooltip, setShowEdgeTooltip] = useState(false)
-  const [edgeTooltipX, setEdgeTooltipX] = useState(0)
-  const [edgeTooltipY, setEdgeTooltipY] = useState(0)
-
-  // 节点tooltip坐标
-  const [showNodeTooltip, setShowNodeTooltip] = useState(false)
-  const [nodeTooltipX, setNodeToolTipX] = useState(0)
-  const [nodeTooltipY, setNodeToolTipY] = useState(0)
-
-  // 节点ContextMenu坐标
-  const [showNodeContextMenu, setShowNodeContextMenu] = useState(false)
-  const [nodeContextMenuX, setNodeContextMenuX] = useState(0)
-  const [nodeContextMenuY, setNodeContextMenuY] = useState(0)
-  const bindEvents = () => {
-    // 监听edge上面mouse事件
-    graph.on('edge:mouseenter', evt => {
-      const { item, target } = evt
-      debugger
-      const type = target.get('type')
-      if(type !== 'text') {
-        return
-      }
-      const model = item.getModel()
-      const { endPoint } = model
-      // y=endPoint.y - height / 2，在同一水平线上，x值=endPoint.x - width - 10
-      const y = endPoint.y - 35
-      const x = endPoint.x - 150 - 10
-      const point = graph.getCanvasByPoint(x, y)
-      setEdgeTooltipX(point.x)
-      setEdgeTooltipY(point.y)
-      setShowEdgeTooltip(true)
-    })
-
-    graph.on('edge:mouseleave', () => {
-      setShowEdgeTooltip(false)
-    })
-
-    // 监听node上面mouse事件
-    graph.on('node:mouseenter', evt => {
-      const { item } = evt
-      const model = item.getModel()
-      const { x, y } = model
-      const point = graph.getCanvasByPoint(x, y)
-
-      setNodeToolTipX(point.x - 75)
-      setNodeToolTipY(point.y + 15)
-      setShowNodeTooltip(true)
-    })
-  
-    // 节点上面触发mouseleave事件后隐藏tooltip和ContextMenu
-    graph.on('node:mouseleave', () => {
-      setShowNodeTooltip(false)
-      setShowNodeContextMenu(false)
-    })
-
-    // 监听节点上面右键菜单事件
-    graph.on('node:contextmenu', evt => {
-      const { item } = evt
-      const model = item.getModel()
-      const { x, y } = model
-      const point = graph.getCanvasByPoint(x, y)
-      setNodeContextMenuX(point.x)
-      setNodeContextMenuY(point.y)
-      setShowNodeContextMenu(true)
-    })
-  }
+  const ref2 = React.useRef(null);
+  let graph = null;
 
   useEffect(() => {
-    if(!graph) {
-      const miniMap = new G6.Minimap()
-      graph = new G6.Graph({
-        container: ref.current,
-        width: 1200,
-        height: 800,
+    if (!graph) { 
+      const graph = new G6.Graph({
+        container: ref2.current,
+        // width,
+        height: 900,
+        // translate the graph to align the canvas's center, support by v3.5.1
+        fitView: true,
+        linkCenter: true,
+        // plugins: [getLegend(colorSetMap)],
         modes: {
-          default: ['drag-canvas', 'drag-node']
+          default: ["drag-canvas", "drag-node", "zoom-canvas"]
         },
         defaultNode: {
-          shape: 'node',
-          // 节点文本样式
+          type: "react-node",
           labelCfg: {
-            style: {
-              fill: '#000000A6',
-              fontSize: 10
-            }
+            position: "bottom"
           },
-          // 节点默认样式
-          style: {
-            stroke: '#72CC4A',
-            width: 150
+          donutColorMap: {
+            // 甜甜圈颜色映射，字段名与 donutAttrs 中的字段名对应
+            income: "#55a9f2",
+            outcome: "#0d47b5",
+            unknown: "#999"
           }
         },
         defaultEdge: {
-          shape: 'polyline'
-        },
-        // 节点交互状态配置
-        nodeStateStyles: {
-          hover: {
-            stroke: 'red',
-            lineWidth: 3
-          }
-        },
-        edgeStateStyles: {
-          hover: {
-            stroke: 'blue',
-            lineWidth: 3
+          size: 1,
+          labelCfg: {
+            autoRotate: true,
+            style: {
+              stroke: "#fff",
+              lineWidth: 4,
+              fill: "#aaa"
+            }
+          },
+          style: {
+            stroke: "#666",
+            opacity: 0.7
           }
         },
         layout: {
-          type: 'dagre',
-          rankdir: 'LR',
-          nodesep: 30,
-          ranksep: 100
+          type: "dagre",
+          rankdir: "lr",
+          // nodesep: 60,
+          // nodeSize: 50,
+          nodesepFunc: (d) => {
+            if (d.id === "son" || d.id === "shop4") return 120;
+            return 20;
+          }
+          // ranksep: 60,
+          // nodesep: 45
         },
-        plugins: [miniMap]
-      })
-    }
+        animate: true
+      });
+
+      appenAutoShapeListener(graph);
+
+      graph.on("node:mouseenter", (evt) => {
+        const { item } = evt;
+        graph.setItemState(item, "active", true);
+      });
+      
+      graph.on("node:mouseleave", (evt) => {
+        const { item } = evt;
+        graph.setItemState(item, "active", false);
+      });
+      
+      graph.on("node:click", (evt) => {
+        const { item } = evt;
+        graph.setItemState(item, "selected", true);
+      });
+      graph.on("canvas:click", (evt) => {
+        graph.getNodes().forEach((node) => {
+          graph.clearItemStates(node);
+        });
+      });
+
+      graph.data(data);
+      graph.render();
+
+      }}, []
+    )
     
-    graph.data(data)
-  
-    graph.render()
-
-    const edges = graph.getEdges()
-    edges.forEach(edge => {
-      const line = edge.getKeyShape()
-      const stroke = line.attr('stroke')
-      const targetNode = edge.getTarget()
-      targetNode.update({
-        style: { stroke }
-      })
-    })
-    graph.paint()
-
-    bindEvents()
-  }, [])
-
-  return (
-    <div ref={ref}>
-      { showEdgeTooltip && <EdgeToolTips x={edgeTooltipX} y={edgeTooltipY} /> }
-      { showNodeTooltip && <NodeTooltips x={nodeTooltipX} y={nodeTooltipY} /> }
-      { showNodeContextMenu && <NodeContextMenu x={nodeContextMenuX} y={nodeContextMenuY} /> }
-    </div>
-  );
+    return <div ref={ref2}></div>;
 }

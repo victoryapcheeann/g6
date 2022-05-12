@@ -13,16 +13,16 @@ function App() {
           {/* A "layout route" is a good place to put markup you want to
               share across all the pages on your site, like navigation. */}
           <nav>
-            <ul>
+            <ul style={{display:'flex', flexDirection:'row', justifyContent:'space-around', width: 500}}>
               <li>
-                <Link to="/PageOne">1</Link>
+                <Link to="/PageOne">G6-react-node Example 1</Link>
               </li>
               <li>
-                <Link to="/PageTwo">2</Link>
+                <Link to="/PageTwo">G6-react-node Example 2</Link>
               </li>
-              <li>
+              {/* <li>
                 <Link to="/PageThree">3</Link>
-              </li>
+              </li> */}
             </ul>
           </nav>
   
@@ -38,16 +38,6 @@ function App() {
 
   return (
     <div>
-      <h1>Basic Example</h1>
-
-      <p>
-        This example demonstrates some of the core features of React Router
-        including nested <code>&lt;Route&gt;</code>s,{" "}
-        <code>&lt;Outlet&gt;</code>s, <code>&lt;Link&gt;</code>s, and using a
-        "*" route (aka "splat route") to render a "not found" page when someone
-        visits an unrecognized URL.
-      </p>
-
       <Routes>
           <Route path="/" element={<Layout />}>
           <Route index element={<PageOne />} />
