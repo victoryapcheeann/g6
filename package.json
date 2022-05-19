@@ -3,6 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@antv/chart-node-g6": "0.0.4",
     "@antv/g6": "^4.6.4",
     "@antv/g6-react-node": "^1.4.4",
     "@antv/graphin": "^2.6.6",

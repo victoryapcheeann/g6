@@ -9,6 +9,10 @@ import PageFour from './pages/page4/page4';
 import PageFive from './pages/page5/page5';
 import PageSix from './pages/page6/page6';
 import PageSeven from './pages/page7/page7';
+import Page8 from './pages/page8/page8';
+import Page9 from './pages/page9/page9';
+import Page10 from './pages/page10/page10';
+import Page11 from './pages/page11/page11';
 
 function App() {
   function Layout() {
@@ -17,7 +21,7 @@ function App() {
           {/* A "layout route" is a good place to put markup you want to
               share across all the pages on your site, like navigation. */}
           <nav>
-            <div className='container' style={{display:'flex', flexDirection:'row'}}>
+            <div className='container' style={{display:'flex', flexDirection:'row', maxWidth: '100vw', flexWrap:'wrap'}}>
               <div>
                 <Link to="/PageOne">Sample</Link>
               </div>
@@ -38,6 +42,18 @@ function App() {
               </div>
               <div>
                 <Link to="/PageSeven">Custom Category Graph</Link>
+              </div>
+              <div>
+                <Link to="/Page8">Node Animation</Link>
+              </div>
+              <div>
+                <Link to="/Page9">Edge Animation</Link>
+              </div>
+              <div>
+                <Link to="/Page10">Arrow Type</Link>
+              </div>
+              <div>
+                <Link to="/Page11">Chart</Link>
               </div>
             </div>
           </nav>
@@ -64,6 +80,10 @@ function App() {
           <Route path="PageFive" element={<PageFive />} />
           <Route path="PageSix" element={<PageSix />} />
           <Route path="PageSeven" element={<PageSeven />} />
+          <Route path="Page8" element={<Page8 />} />
+          <Route path="Page9" element={<Page9 />} />
+          <Route path="Page10" element={<Page10 />} />
+          <Route path="Page11" element={<Page11 />} />
         </Route>
       </Routes>
     </div>
