@@ -95,11 +95,14 @@ const Card = ({ cfg }) => {
             fontWeight: 'bold',
           }}
         >
-          这是一个卡片
+          这是一个卡片 {cfg['id']}
         </Text>
         <Text style={{ fill: '#ccc', fontSize: 12, margin: [12, 24] }}>
           我是一段特别特别特别特别特别特别特别长的描述
         </Text>
+        {cfg['id'] == 'node1' && <Text style={{ fill: '#ccc', fontSize: 12, margin: [12, 24] }}>
+          abc
+        </Text>}
         {collapsed && (
           <Group>
             <Image
@@ -174,7 +177,7 @@ export default function PageOne() {
           type: "dagre",
           rankdir: "BT", // 可选，默认为图的中心
           // align: 'DL', // 可选
-          nodesep: 50, // 可选
+          nodesep: 150, // 可选
           ranksep: 90 // 可选
           // controlPoints: true
         },

@@ -1,0 +1,18 @@
+layout: {
+  type: 'fruchterman',
+  gravity: 5,
+  speed: 5,
+  // for rendering after each iteration
+  tick: () => {
+    graph.refreshPositions()
+  }
+},
+
+layout: {
+  type: "dagre",
+  rankdir: "BT", // 可选，默认为图的中心
+  // align: 'DL', // 可选
+  nodesep: 150, // 可选
+  ranksep: 90 // 可选
+  // controlPoints: true
+},
