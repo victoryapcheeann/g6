@@ -14,6 +14,7 @@ import Page9 from './pages/page9/page9';
 import Page10 from './pages/page10/page10';
 import Page11 from './pages/page11/page11';
 import Page12 from './pages/page12/page12';
+import Page13 from './pages/page13/page13';
 
 function App() {
   function Layout() {
@@ -59,6 +60,9 @@ function App() {
               <div>
                 <Link to="/Page12">Tooltip</Link>
               </div>
+              <div>
+                <Link to="/Page13">Final Example</Link>
+              </div>
             </div>
           </nav>
   
@@ -89,6 +93,7 @@ function App() {
           <Route path="Page10" element={<Page10 />} />
           <Route path="Page11" element={<Page11 />} />
           <Route path="Page12" element={<Page12 />} />
+          <Route path="Page13" element={<Page13 />} />
         </Route>
       </Routes>
     </div>

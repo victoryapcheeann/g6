@@ -181,7 +181,7 @@ const data = {
 
   data.edges.forEach((edge) => {
     edge.style.stroke = '#F6BD16';
-    console.log(edge.style.endArrow);
+    // console.log(edge.style.endArrow);
     if (edge.id !== 'edge0') edge.style.endArrow.fill = '#F6BD16';
   });
   
