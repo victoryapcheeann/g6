@@ -80,7 +80,7 @@ function App() {
     <div>
       <Routes>
           <Route path="/" element={<Layout />}>
-          <Route index element={<PageOne />} />
+          <Route index element={<Page13 />} />
           <Route path="PageOne" element={<PageOne />} />
           <Route path="PageTwo" element={<PageTwo />} />
           <Route path="PageThree" element={<PageThree />} />
