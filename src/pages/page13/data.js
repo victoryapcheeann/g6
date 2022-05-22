@@ -5,11 +5,17 @@ export const data = {
     nodes: [
       { id: "node0", label: "node0" },
       { id: "node1", label: "1" },
+      { id: "node100", label: "100"},
       { id: "node2", label: "2" },
       { id: "node3", label: "3" },
       { id: "node4", label: "4" },
       { id: "node5", label: "5" },
       { id: "node6", label: "6" },
+      { id: "node101", label: "101"},
+      { id: "node102", label: "102", type:'node-with-line'},
+      { id: "node103", label: "103", type:'node-with-interval'},
+      { id: "node104", label: "104", type:'node-with-pie'},
+      { id: "node105", label: "105", type:'node-with-point'},
       { id: "node7", label: "7" },
       { id: "node8", label: "8" },
       { id: "node9", label: "9" },
@@ -90,6 +96,20 @@ export const data = {
       { id: "node27", label: "27", type: 'image', size: [260, 80], img: 'https://gw.alipayobjects.com/os/s/prod/antv/assets/image/logo-with-text-73b8a.svg'},
     ],
     edges: [
+      { source: "node6", target:"node101"},
+      { source: "node101", target:"node102", type:'line'},
+      { source: "node101", target:"node103", type:'line'},
+      { source: "node101", target:"node105", type:'line'},
+      { source: "node101", target:"node104", type:'line'},
+      { source: "node100", target:"node7", type: 'extra-shape-edge', 
+        label: '$5,000',
+        labelCfg: {
+          refY: -30,
+          refX: 60,
+          style: {
+              fill: 'orange'
+          }
+      }},
       { source: "node10", target: "node20" },
       { source: "node10", target: "node21",
       style: {

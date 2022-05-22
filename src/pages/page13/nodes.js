@@ -53,13 +53,13 @@ const Tag = ({ text, color }) => (
               fontWeight: 'bold',
             }}
           >
-            这是一个卡片 {cfg['id']}
+            Actor: {cfg['id']}
           </Text>
           <Text style={{ fill: '#ccc', fontSize: 12, margin: [12, 24] }}>
-            我是一段特别特别特别特别特别特别特别长的描述
+            Some Description
           </Text>
           {cfg['id'] == 'node1' && <Text style={{ fill: '#ccc', fontSize: 12, margin: [12, 24] }}>
-            abc
+            Only node 1 will show this
           </Text>}
           {collapsed && (
             <Group>
